@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Queries - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-search"></i> Advanced SQL Queries</h1>
+        <p>Nested queries, joins, and aggregate functions</p>
+    </div>
+
+    <div class="query-section">
+        <!-- Nested Query -->
+        <div class="query-card">
+            <div class="query-header">
+                <i class="fas fa-layer-group"></i>
+                <h2>Nested Query: High-Value Passengers</h2>
+            </div>
+            <p class="query-description">
+                Find passengers who have spent more than the average on tickets using a subquery.
+            </p>
+            
+            <button class="btn btn-primary" onclick="runNestedQuery()">
+                <i class="fas fa-play"></i> Execute Nested Query
+            </button>
+            
+            <div id="nestedResult" class="query-result" style="display:none;"></div>
+
+            <div class="code-block-container">
+                <h4>SQL Code:</h4>
+                <pre class="code-block">SELECT p.PassengerID, 
+       CONCAT(p.FirstName, ' ', p.LastName) as Name,
+       COUNT(t.TicketNumber) as TotalTickets,
+       SUM(t.Fare) as TotalSpending
+FROM PASSENGER p
+JOIN TICKET t ON p.PassengerID = t.PassengerID
+GROUP BY p.PassengerID, p.FirstName, p.LastName
+HAVING SUM(t.Fare) > (
+    -- Subquery: Calculate average spending
+    SELECT AVG(TotalFare) 
+    FROM (
+        SELECT SUM(Fare) as TotalFare 
+        FROM TICKET 
+        GROUP BY PassengerID
+    ) as AvgSpending
+)
+ORDER BY TotalSpending DESC;</pre>
+            </div>
+
+            <div class="query-explanation">
+                <h4>Query Explanation:</h4>
+                <ul>
+                    <li>✓ <strong>Outer Query:</strong> Groups tickets by passenger</li>
+                    <li>✓ <strong>Inner Subquery:</strong> Calculates average per-passenger spending</li>
+                    <li>✓ <strong>HAVING Clause:</strong> Filters passengers above average</li>
+                    <li>✓ <strong>Use Case:</strong> Identify VIP passengers for loyalty programs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Join Query -->
+        <div class="query-card">
+            <div class="query-header">
+                <i class="fas fa-link"></i>
+                <h2>Join Query: Route Details with Stations</h2>
+            </div>
+            <p class="query-description">
+                Display complete route information with all stations using multi-table joins.
+            </p>
+            
+            <button class="btn btn-success" onclick="runJoinQuery()">
+                <i class="fas fa-play"></i> Execute Join Query
+            </button>
+            
+            <div id="joinResult" class="query-result" style="display:none;"></div>
+
+            <div class="code-block-container">
+                <h4>SQL Code:</h4>
+                <pre class="code-block">SELECT r.RouteCode, 
+       r.Name as RouteName, 
+       r.TotalDistance,
+       GROUP_CONCAT(
+           s.Name 
+           ORDER BY rs.SequenceNumber 
+           SEPARATOR ' → '
+       ) as Stations,
+       COUNT(DISTINCT rs.StationID) as StationCount
+FROM ROUTE r
+INNER JOIN ROUTE_STATION rs ON r.RouteID = rs.RouteID
+INNER JOIN STATION s ON rs.StationID = s.StationID
+GROUP BY r.RouteID, r.RouteCode, r.Name, r.TotalDistance
+ORDER BY r.RouteID;</pre>
+            </div>
+
+            <div class="query-explanation">
+                <h4>Query Explanation:</h4>
+                <ul>
+                    <li>✓ <strong>INNER JOIN:</strong> Links routes, route_station, and stations tables</li>
+                    <li>✓ <strong>GROUP_CONCAT:</strong> Creates station sequence string</li>
+                    <li>✓ <strong>ORDER BY:</strong> Ensures stations appear in correct order</li>
+                    <li>✓ <strong>Use Case:</strong> Display complete route information to passengers</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Aggregate Query -->
+        <div class="query-card">
+            <div class="query-header">
+                <i class="fas fa-chart-pie"></i>
+                <h2>Aggregate Query: Revenue by Payment Method</h2>
+            </div>
+            <p class="query-description">
+                Analyze revenue distribution across different payment methods with statistical aggregations.
+            </p>
+            
+            <button class="btn btn-info" onclick="runAggregateQuery()">
+                <i class="fas fa-play"></i> Execute Aggregate Query
+            </button>
+            
+            <div id="aggregateResult" class="query-result" style="display:none;"></div>
+
+            <div class="code-block-container">
+                <h4>SQL Code:</h4>
+                <pre class="code-block">SELECT PaymentMethod,
+       COUNT(*) as TransactionCount,
+       SUM(Amount) as TotalRevenue,
+       AVG(Amount) as AverageAmount,
+       MIN(Amount) as MinAmount,
+       MAX(Amount) as MaxAmount
+FROM PAYMENT
+WHERE Status = 'Completed'
+GROUP BY PaymentMethod
+ORDER BY TotalRevenue DESC;</pre>
+            </div>
+
+            <div class="query-explanation">
+                <h4>Query Explanation:</h4>
+                <ul>
+                    <li>✓ <strong>COUNT(*):</strong> Total transactions per method</li>
+                    <li>✓ <strong>SUM():</strong> Total revenue per method</li>
+                    <li>✓ <strong>AVG():</strong> Average transaction value</li>
+                    <li>✓ <strong>MIN/MAX:</strong> Transaction range analysis</li>
+                    <li>✓ <strong>Use Case:</strong> Payment method performance analysis</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Combined Analysis -->
+    <div class="combined-analysis">
+        <h2><i class="fas fa-chart-line"></i> Run All Queries</h2>
+        <p>Execute all three query types at once for comprehensive analysis</p>
+        
+        <button class="btn btn-lg btn-primary" onclick="runAllQueries()">
+            <i class="fas fa-bolt"></i> Execute All Queries
+        </button>
+        
+        <div id="allResults" class="all-results" style="display:none;"></div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="performance-section">
+        <h2><i class="fas fa-tachometer-alt"></i> Query Performance</h2>
+        <div class="performance-grid">
+            <div class="performance-card">
+                <i class="fas fa-clock"></i>
+                <h3>Execution Time</h3>
+                <p id="execTime">--</p>
+            </div>
+            <div class="performance-card">
+                <i class="fas fa-database"></i>
+                <h3>Rows Processed</h3>
+                <p id="rowsProcessed">--</p>
+            </div>
+            <div class="performance-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Queries Run</h3>
+                <p id="queriesRun">0</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/queries.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Passengers - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-users"></i> Passenger Management</h1>
+            <p>Manage passenger records and information</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Add Passenger
+        </button>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search passengers..." onkeyup="filterPassengers()">
+        </div>
+    </div>
+
+    <!-- Passengers Table -->
+    <div class="table-container">
+        <table class="data-table" id="passengersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Date of Birth</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="passengersBody">
+                <tr>
+                    <td colspan="8" class="text-center">
+                        <div class="loading-spinner"></div>
+                        <p>Loading passengers...</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="passengerModal" class="modal">
+    <div class="modal-content modern-modal">
+        <div class="modal-header modern-header">
+            <div class="header-content">
+                <div class="icon-circle">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div>
+                    <h2 id="modalTitle">Add New Passenger</h2>
+                    <p class="modal-subtitle">Fill in the passenger details below</p>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="passengerForm" onsubmit="savePassenger(event)">
+            <div class="modal-body modern-body">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-id-card"></i> Personal Information
+                    </h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name <span class="required">*</span></label>
+                            <input type="text" id="firstName" name="firstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name <span class="required">*</span></label>
+                            <input type="text" id="lastName" name="lastName" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" name="status">
+                                <option value="Active">✓ Active</option>
+                                <option value="Inactive">○ Inactive</option>
+                                <option value="Suspended">⊘ Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-address-book"></i> Contact Details
+                    </h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="passenger@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91-XXXXXXXXXX" pattern="[+]?[0-9-]*">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i> Address Information
+                    </h3>
+                    <div class="form-group">
+                        <label for="address">Street Address</label>
+                        <textarea id="address" name="address" rows="2" placeholder="Enter full address"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="Enter city">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="passengerId" name="passengerId">
+            <div class="modal-footer modern-footer">
+                <button type="button" class="btn btn-cancel" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-check"></i> Save Passenger
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/passengers.js') }}"></script>
+{% endblock %}

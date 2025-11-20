@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Procedures - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-cogs"></i> Stored Procedures</h1>
+        <p>Complex business logic and operations</p>
+    </div>
+
+    <div class="procedure-grid">
+        <!-- Procedure 1: Book Ticket -->
+        <div class="procedure-card">
+            <div class="procedure-header">
+                <i class="fas fa-ticket"></i>
+                <h2>Book Ticket with Payment</h2>
+            </div>
+            <p class="procedure-description">
+                Complete ticket booking with automatic payment processing, seat validation, and comprehensive error handling.
+            </p>
+            
+            <form class="procedure-form" onsubmit="bookTicket(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Passenger ID</label>
+                        <input type="number" name="passengerId" required placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label>Schedule ID</label>
+                        <input type="number" name="scheduleId" required placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label>Source Station ID</label>
+                        <input type="number" name="sourceStationId" required placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label>Destination Station ID</label>
+                        <input type="number" name="destStationId" required placeholder="e.g., 5">
+                    </div>
+                    <div class="form-group">
+                        <label>Seat Number</label>
+                        <input type="text" name="seatNumber" required placeholder="e.g., Z99">
+                    </div>
+                    <div class="form-group">
+                        <label>Journey Date</label>
+                        <input type="date" name="journeyDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fare (₹)</label>
+                        <input type="number" step="0.01" name="fare" required placeholder="e.g., 75.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <select name="paymentMethod" required>
+                            <option value="UPI">UPI</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Debit Card">Debit Card</option>
+                            <option value="Net Banking">Net Banking</option>
+                            <option value="Wallet">Wallet</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-ticket"></i> Book Ticket
+                </button>
+            </form>
+
+            <div class="procedure-info">
+                <h4>Validations Performed:</h4>
+                <ul>
+                    <li>✓ Passenger exists and is active</li>
+                    <li>✓ Schedule is valid</li>
+                    <li>✓ Source ≠ Destination stations</li>
+                    <li>✓ Seat availability check</li>
+                    <li>✓ Positive fare amount</li>
+                    <li>✓ Atomic transaction (rollback on error)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Procedure 2: Revenue Report -->
+        <div class="procedure-card">
+            <div class="procedure-header">
+                <i class="fas fa-chart-bar"></i>
+                <h2>Generate Revenue Report</h2>
+            </div>
+            <p class="procedure-description">
+                Comprehensive revenue analysis with breakdowns by payment method and type (tickets vs passes).
+            </p>
+            
+            <form class="procedure-form" onsubmit="generateReport(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="endDate" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-file-invoice-dollar"></i> Generate Report
+                </button>
+            </form>
+
+            <div id="reportResults" class="report-results" style="display:none;">
+                <h3>Report Results</h3>
+                <div id="reportContent"></div>
+            </div>
+
+            <div class="procedure-info">
+                <h4>Report Includes:</h4>
+                <ul>
+                    <li>✓ Total revenue and transaction count</li>
+                    <li>✓ Average, min, max transaction amounts</li>
+                    <li>✓ Revenue breakdown by payment method</li>
+                    <li>✓ Revenue breakdown by type (Ticket/Pass)</li>
+                    <li>✓ Percentage distribution</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQL Code -->
+    <div class="code-section">
+        <h2><i class="fas fa-code"></i> Procedure SQL Code</h2>
+        
+        <div class="code-block-container">
+            <h3>Procedure 1: Book Ticket with Payment</h3>
+            <pre class="code-block">DELIMITER //
+
+CREATE PROCEDURE sp_book_ticket_with_payment(
+    IN p_passenger_id INT,
+    IN p_schedule_id INT,
+    IN p_source_station_id INT,
+    IN p_dest_station_id INT,
+    IN p_seat_number VARCHAR(10),
+    IN p_journey_date DATE,
+    IN p_fare DECIMAL(8,2),
+    IN p_payment_method ENUM('Credit Card', 'Debit Card', 'UPI', 
+                              'Net Banking', 'Wallet', 'Cash')
+)
+BEGIN
+    DECLARE v_ticket_number INT;
+    DECLARE v_ticket_code VARCHAR(20);
+    DECLARE v_transaction_code VARCHAR(30);
+    
+    -- Comprehensive validation checks
+    -- 1. Passenger validation
+    -- 2. Schedule validation
+    -- 3. Station validation
+    -- 4. Seat availability check
+    -- 5. Fare validation
+    
+    START TRANSACTION;
+    
+    -- Generate unique ticket code
+    SET v_ticket_code = CONCAT('TKT', DATE_FORMAT(NOW(), '%Y%m%d'), 
+        LPAD(..., 3, '0'));
+    
+    -- Insert ticket
+    INSERT INTO TICKET (...) VALUES (...);
+    SET v_ticket_number = LAST_INSERT_ID();
+    
+    -- Generate transaction code
+    SET v_transaction_code = CONCAT('TXN', DATE_FORMAT(NOW(), '%Y%m%d'), 
+        LPAD(..., 3, '0'));
+    
+    -- Insert payment
+    INSERT INTO PAYMENT (...) VALUES (...);
+    
+    COMMIT;
+    
+    -- Return booking details
+    SELECT 'SUCCESS' AS Status, ...;
+END//
+
+DELIMITER ;</pre>
+        </div>
+
+        <div class="code-block-container">
+            <h3>Procedure 2: Generate Revenue Report</h3>
+            <pre class="code-block">DELIMITER //
+
+CREATE PROCEDURE sp_generate_revenue_report(
+    IN p_start_date DATE,
+    IN p_end_date DATE
+)
+BEGIN
+    -- Overall Summary
+    SELECT 
+        COUNT(*) AS TotalTransactions,
+        SUM(Amount) AS TotalRevenue,
+        AVG(Amount) AS AverageTransaction,
+        MIN(Amount) AS MinTransaction,
+        MAX(Amount) AS MaxTransaction
+    FROM PAYMENT
+    WHERE Status = 'Completed' 
+    AND DATE(CreatedAt) BETWEEN p_start_date AND p_end_date;
+    
+    -- Revenue by Payment Method
+    SELECT 
+        PaymentMethod,
+        COUNT(*) AS TransactionCount,
+        SUM(Amount) AS MethodRevenue,
+        ROUND((SUM(Amount) / v_total_amount) * 100, 2) AS RevenuePercentage
+    FROM PAYMENT
+    WHERE Status = 'Completed'...
+    GROUP BY PaymentMethod;
+    
+    -- Revenue by Type (Ticket vs Pass)
+    SELECT 
+        CASE 
+            WHEN TicketNumber IS NOT NULL THEN 'Ticket Sales'
+            WHEN PassID IS NOT NULL THEN 'Pass Sales'
+        END AS RevenueType,
+        COUNT(*) AS SalesCount,
+        SUM(Amount) AS TypeRevenue
+    FROM PAYMENT
+    WHERE Status = 'Completed'...
+    GROUP BY RevenueType;
+END//
+
+DELIMITER ;</pre>
+        </div>
+    </div>
+</div>
+
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Result</h2>
+            <span class="close" onclick="closeResultModal()">&times;</span>
+        </div>
+        <div id="modalContent" class="modal-body"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/procedures.js') }}"></script>
+{% endblock %}

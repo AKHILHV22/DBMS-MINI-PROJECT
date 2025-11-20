@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Home - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-animation">
+            <i class="fas fa-train hero-icon"></i>
+        </div>
+        <h1 class="hero-title">TranspoTrack DBMS</h1>
+        <p class="hero-subtitle">Public Transport & Metro Ticketing System</p>
+        <p class="hero-description">
+            A comprehensive database management system for managing passenger records, 
+            ticket bookings, season passes, route schedules, and payments with real-time 
+            analytics and reporting.
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-dashboard"></i> Go to Dashboard
+            </a>
+            <a href="{{ url_for('passengers') }}" class="btn btn-outline btn-lg">
+                <i class="fas fa-users"></i> Manage Passengers
+            </a>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-ticket"></i>
+            </div>
+            <h3>Ticket Booking</h3>
+            <p>Real-time seat availability and instant booking confirmation</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <h3>Pass Management</h3>
+            <p>Digital pass renewal with auto fine calculation</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Analytics & Reports</h3>
+            <p>Comprehensive reports on revenue and route demand</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-comment"></i>
+            </div>
+            <h3>Complaint Tracking</h3>
+            <p>Efficient passenger feedback and complaint resolution</p>
+        </div>
+    </div>
+
+    <div class="tech-stack">
+        <h2>Technology Stack</h2>
+        <div class="tech-badges">
+            <span class="badge badge-primary"><i class="fas fa-database"></i> MySQL</span>
+            <span class="badge badge-success"><i class="fab fa-python"></i> Python Flask</span>
+            <span class="badge badge-info"><i class="fab fa-html5"></i> HTML5</span>
+            <span class="badge badge-warning"><i class="fab fa-css3-alt"></i> CSS3</span>
+            <span class="badge badge-danger"><i class="fab fa-js"></i> JavaScript</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

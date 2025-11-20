@@ -1,0 +1,270 @@
+{% extends "base_minimal.html" %}
+
+{% block title %}Passenger Dashboard - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    <div class="user-header">
+        <h1>👤 Passenger Dashboard</h1>
+        <div class="user-info">
+            <span id="passengerUsername"></span>
+            <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="user-content">
+        <div class="welcome-card">
+            <h2>🎉 Welcome, Passenger!</h2>
+            <p>You have <strong>LIMITED ACCESS</strong> to view schedules and book tickets.</p>
+        </div>
+
+        <div class="privileges-card">
+            <h3>🔑 Your Privileges</h3>
+            <ul class="privileges-list">
+                <li>✅ View train schedules</li>
+                <li>✅ Book new tickets</li>
+                <li>❌ Cannot modify stations or vehicles</li>
+                <li>❌ Cannot access admin functions</li>
+                <li>❌ Cannot view system reports</li>
+            </ul>
+        </div>
+
+        <div class="user-actions">
+            <h3>⚡ Available Actions</h3>
+            <div class="action-grid">
+                <a href="/user/book-ticket" class="user-action-card">
+                    <div class="action-icon">🎫</div>
+                    <h4>Book Ticket</h4>
+                    <p>Purchase new ticket</p>
+                </a>
+
+                <a href="/user/get-pass" class="user-action-card">
+                    <div class="action-icon">🎟️</div>
+                    <h4>Get Pass</h4>
+                    <p>Apply for travel pass</p>
+                </a>
+
+                <a href="/user/file-complaint" class="user-action-card">
+                    <div class="action-icon">💬</div>
+                    <h4>File Complaint</h4>
+                    <p>Report an issue</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.user-header {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+
+.user-header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #14b8a6;
+}
+
+.welcome-card, .privileges-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.welcome-card {
+    border-left: 5px solid #2dd4bf;
+}
+
+.privileges-card h3, .welcome-card h2 {
+    color: #14b8a6;
+    margin-bottom: 1rem;
+}
+
+.privileges-list {
+    list-style: none;
+    padding: 0;
+}
+
+.privileges-list li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f0fdfa;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.user-actions h3 {
+    color: #14b8a6;
+    margin-bottom: 1.5rem;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.user-action-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    color: #134e4a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.user-action-card:hover:not(.disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(45, 212, 191, 0.3);
+    border-color: #2dd4bf;
+}
+
+.user-action-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.user-action-card h4 {
+    color: #14b8a6;
+    margin-bottom: 0.5rem;
+}
+
+.user-action-card p {
+    color: #0f766e;
+    font-size: 0.9rem;
+}
+
+.schedule-section, .booking-section, .tickets-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.schedule-section h3, .booking-section h3, .tickets-section h3 {
+    color: #14b8a6;
+    margin-bottom: 1.5rem;
+}
+
+.booking-form {
+    max-width: 800px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #134e4a;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ccfbf1;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2dd4bf;
+}
+
+.btn-book {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+</style>
+
+<script>
+// Check if user is logged in and is passenger
+const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+if (!user.username || user.role !== 'user') {
+    window.location.href = '/login';
+} else {
+    document.getElementById('passengerUsername').textContent = `👤 ${user.username}`;
+}
+
+function logout() {
+    sessionStorage.removeItem('user');
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = '/login';
+    }, 1000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Complaints - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-comment"></i> Complaint Management</h1>
+            <p>Track and resolve passenger complaints</p>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search complaints..." onkeyup="filterComplaints()">
+        </div>
+        <div class="filter-buttons">
+            <button class="btn btn-sm" onclick="filterByStatus('all')">All</button>
+            <button class="btn btn-sm btn-warning" onclick="filterByStatus('Pending')">Pending</button>
+            <button class="btn btn-sm btn-info" onclick="filterByStatus('In Progress')">In Progress</button>
+            <button class="btn btn-sm btn-success" onclick="filterByStatus('Resolved')">Resolved</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="complaintsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Code</th>
+                    <th>Passenger</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="complaintsBody">
+                <tr>
+                    <td colspan="9" class="text-center">
+                        <div class="loading-spinner"></div>
+                        <p>Loading complaints...</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Resolve Modal -->
+<div id="resolveModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-check-circle"></i> Resolve Complaint</h2>
+            <span class="close" onclick="closeResolveModal()">&times;</span>
+        </div>
+        <form id="resolveForm" onsubmit="resolveComplaint(event)">
+            <div class="form-group">
+                <label for="newStatus">Status *</label>
+                <select id="newStatus" name="status" required>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="resolution">Resolution *</label>
+                <textarea id="resolution" name="resolution" rows="4" required></textarea>
+            </div>
+            <input type="hidden" id="complaintId" name="complaintId">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeResolveModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Complaint</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/complaints.js') }}"></script>
+{% endblock %}

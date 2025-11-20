@@ -1,0 +1,281 @@
+{% extends "base_minimal.html" %}
+
+{% block title %}Login - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h1>🚆 TranspoTrack</h1>
+            <p>Secure Login Portal</p>
+        </div>
+        
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username">
+                    <i class="icon">👤</i> Username
+                </label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="Enter your username" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="icon">🔒</i> Password
+                </label>
+                <input type="password" id="password" name="password" required 
+                       placeholder="Enter your password" autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+                <label for="role">
+                    <i class="icon">🎭</i> Login As
+                </label>
+                <select id="role" name="role" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="admin">Administrator</option>
+                    <option value="user">Passenger</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <span id="loginText">Login</span>
+                <span id="loginSpinner" style="display: none;">⏳ Logging in...</span>
+            </button>
+        </form>
+
+        <div class="login-info">
+            <h3>📋 Demo Credentials</h3>
+            <div class="credentials-grid">
+                <div class="credential-card">
+                    <h4>👨‍💼 Administrator</h4>
+                    <p><strong>Username:</strong> transport_admin</p>
+                    <p><strong>Password:</strong> admin_pass</p>
+                    <p class="access-info">Full system access</p>
+                </div>
+                <div class="credential-card">
+                    <h4>👤 Passenger</h4>
+                    <p><strong>Username:</strong> passenger_user</p>
+                    <p><strong>Password:</strong> user_pass</p>
+                    <p class="access-info">Limited access</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <p>🔐 Secure Database Authentication</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.login-header {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.login-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.login-header p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+}
+
+.login-form {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #134e4a;
+}
+
+.form-group .icon {
+    font-size: 1.2rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #ccfbf1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.login-info {
+    background: #f0fdfa;
+    padding: 1.5rem 2rem;
+    border-top: 2px solid #ccfbf1;
+}
+
+.login-info h3 {
+    text-align: center;
+    color: #134e4a;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.credentials-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.credential-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid #99f6e4;
+}
+
+.credential-card h4 {
+    color: #14b8a6;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.credential-card p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: #134e4a;
+}
+
+.credential-card .access-info {
+    color: #0f766e;
+    font-style: italic;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.login-footer {
+    background: #134e4a;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+}
+
+.login-footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+    
+    const loginBtn = e.target.querySelector('.btn-login');
+    const loginText = document.getElementById('loginText');
+    const loginSpinner = document.getElementById('loginSpinner');
+    
+    // Show loading state
+    loginBtn.disabled = true;
+    loginText.style.display = 'none';
+    loginSpinner.style.display = 'inline';
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password, role })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Login successful! Redirecting...', 'success');
+            
+            // Store user info in session storage
+            sessionStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Redirect based on role
+            setTimeout(() => {
+                if (data.user.role === 'admin') {
+                    window.location.href = '/admin-dashboard';
+                } else {
+                    window.location.href = '/user-dashboard';
+                }
+            }, 1000);
+        } else {
+            showToast(data.error || 'Invalid credentials', 'error');
+            loginBtn.disabled = false;
+            loginText.style.display = 'inline';
+            loginSpinner.style.display = 'none';
+        }
+    } catch (error) {
+        showToast('Login failed. Please try again.', 'error');
+        loginBtn.disabled = false;
+        loginText.style.display = 'inline';
+        loginSpinner.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

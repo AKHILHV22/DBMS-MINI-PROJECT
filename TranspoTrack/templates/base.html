@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TranspoTrack DBMS{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-train"></i>
+                <span>TranspoTrack</span>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('dashboard') }}" class="nav-link"><i class="fas fa-dashboard"></i> Dashboard</a></li>
+                <li class="dropdown">
+                    <a href="#" class="nav-link"><i class="fas fa-database"></i> Tables <i class="fas fa-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('passengers') }}"><i class="fas fa-users"></i> Passengers</a></li>
+                        <li><a href="{{ url_for('stations') }}"><i class="fas fa-location-dot"></i> Stations</a></li>
+                        <li><a href="{{ url_for('tickets') }}"><i class="fas fa-ticket"></i> Tickets</a></li>
+                        <li><a href="{{ url_for('vehicles') }}"><i class="fas fa-bus"></i> Vehicles</a></li>
+                        <li><a href="{{ url_for('passes') }}"><i class="fas fa-id-card"></i> Passes</a></li>
+                        <li><a href="{{ url_for('complaints') }}"><i class="fas fa-comment"></i> Complaints</a></li>
+                    </ul>
+                </li>
+                <li><a href="{{ url_for('triggers') }}" class="nav-link"><i class="fas fa-bolt"></i> Triggers</a></li>
+                <li><a href="{{ url_for('procedures') }}" class="nav-link"><i class="fas fa-cogs"></i> Procedures</a></li>
+                <li><a href="{{ url_for('functions') }}" class="nav-link"><i class="fas fa-function"></i> Functions</a></li>
+                <li><a href="{{ url_for('queries') }}" class="nav-link"><i class="fas fa-search"></i> Queries</a></li>
+                <li><a href="{{ url_for('reports') }}" class="nav-link"><i class="fas fa-chart-line"></i> Reports</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 TranspoTrack DBMS | PESU University | DBMS Project</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

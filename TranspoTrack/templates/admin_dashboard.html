@@ -1,0 +1,265 @@
+{% extends "base_minimal.html" %}
+
+{% block title %}Admin Dashboard - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>👨‍💼 Administrator Dashboard</h1>
+        <div class="user-info">
+            <span id="adminUsername"></span>
+            <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="admin-content">
+        <div class="welcome-card">
+            <h2>🎉 Welcome, Administrator!</h2>
+            <p>You have <strong>FULL ACCESS</strong> to all system features and database operations.</p>
+        </div>
+
+        <div class="privileges-card">
+            <h3>🔑 Your Privileges</h3>
+            <ul class="privileges-list">
+                <li>✅ Full CRUD operations on all tables</li>
+                <li>✅ Execute stored procedures and functions</li>
+                <li>✅ Manage triggers and database objects</li>
+                <li>✅ View and generate reports</li>
+                <li>✅ User management and access control</li>
+                <li>✅ System configuration and settings</li>
+            </ul>
+        </div>
+
+        <div class="admin-actions">
+            <h3>⚡ Quick Admin Actions</h3>
+            <div class="action-grid">
+                <a href="/dashboard" class="admin-action-card">
+                    <div class="action-icon">📊</div>
+                    <h4>System Dashboard</h4>
+                    <p>View complete statistics</p>
+                </a>
+
+                <a href="/passengers" class="admin-action-card">
+                    <div class="action-icon">👥</div>
+                    <h4>Manage Passengers</h4>
+                    <p>Full CRUD access</p>
+                </a>
+
+                <a href="/stations" class="admin-action-card">
+                    <div class="action-icon">🚉</div>
+                    <h4>Manage Stations</h4>
+                    <p>Full CRUD access</p>
+                </a>
+
+                <a href="/vehicles" class="admin-action-card">
+                    <div class="action-icon">🚗</div>
+                    <h4>Manage Vehicles</h4>
+                    <p>Full CRUD access</p>
+                </a>
+
+                <a href="/tickets" class="admin-action-card">
+                    <div class="action-icon">🎫</div>
+                    <h4>All Tickets</h4>
+                    <p>View and manage</p>
+                </a>
+
+                <a href="/passes" class="admin-action-card">
+                    <div class="action-icon">🎟️</div>
+                    <h4>All Passes</h4>
+                    <p>View and manage</p>
+                </a>
+
+                <a href="/complaints" class="admin-action-card">
+                    <div class="action-icon">💬</div>
+                    <h4>Complaints</h4>
+                    <p>Resolve issues</p>
+                </a>
+
+                <a href="/triggers" class="admin-action-card">
+                    <div class="action-icon">⚡</div>
+                    <h4>Triggers</h4>
+                    <p>Test and manage</p>
+                </a>
+
+                <a href="/procedures" class="admin-action-card">
+                    <div class="action-icon">🔧</div>
+                    <h4>Procedures</h4>
+                    <p>Execute operations</p>
+                </a>
+
+                <a href="/functions" class="admin-action-card">
+                    <div class="action-icon">🧮</div>
+                    <h4>Functions</h4>
+                    <p>Test functions</p>
+                </a>
+
+                <a href="/queries" class="admin-action-card">
+                    <div class="action-icon">🔍</div>
+                    <h4>Advanced Queries</h4>
+                    <p>Complex operations</p>
+                </a>
+
+                <a href="/reports" class="admin-action-card">
+                    <div class="action-icon">📈</div>
+                    <h4>Reports</h4>
+                    <p>Analytics & insights</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.btn-logout {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #14b8a6;
+}
+
+.welcome-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border-left: 5px solid #2dd4bf;
+}
+
+.welcome-card h2 {
+    color: #14b8a6;
+    margin-bottom: 1rem;
+}
+
+.privileges-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.privileges-card h3 {
+    color: #14b8a6;
+    margin-bottom: 1rem;
+}
+
+.privileges-list {
+    list-style: none;
+    padding: 0;
+}
+
+.privileges-list li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f0fdfa;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.admin-actions h3 {
+    color: #14b8a6;
+    margin-bottom: 1.5rem;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-action-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    color: #134e4a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.admin-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(45, 212, 191, 0.3);
+    border-color: #2dd4bf;
+}
+
+.action-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.admin-action-card h4 {
+    color: #14b8a6;
+    margin-bottom: 0.5rem;
+}
+
+.admin-action-card p {
+    color: #0f766e;
+    font-size: 0.9rem;
+}
+</style>
+
+<script>
+// Check if user is logged in and is admin
+const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+if (!user.username || user.role !== 'admin') {
+    window.location.href = '/login';
+} else {
+    document.getElementById('adminUsername').textContent = `👤 ${user.username}`;
+}
+
+function logout() {
+    sessionStorage.removeItem('user');
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => {
+        window.location.href = '/login';
+    }, 1000);
+}
+</script>
+{% endblock %}

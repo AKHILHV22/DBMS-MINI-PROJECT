@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Passes - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-id-card"></i> Pass Management</h1>
+            <p>Manage season passes and subscriptions</p>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search passes..." onkeyup="filterPasses()">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="passesTable">
+            <thead>
+                <tr>
+                    <th>Pass ID</th>
+                    <th>Code</th>
+                    <th>Passenger</th>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="passesBody">
+                <tr>
+                    <td colspan="8" class="text-center">
+                        <div class="loading-spinner"></div>
+                        <p>Loading passes...</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/passes.js') }}"></script>
+{% endblock %}

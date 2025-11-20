@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Tickets - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-ticket"></i> Ticket Management</h1>
+            <p>View and manage ticket bookings</p>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search tickets..." onkeyup="filterTickets()">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="ticketsTable">
+            <thead>
+                <tr>
+                    <th>Ticket #</th>
+                    <th>Code</th>
+                    <th>Passenger</th>
+                    <th>Source</th>
+                    <th>Destination</th>
+                    <th>Journey Date</th>
+                    <th>Seat</th>
+                    <th>Fare</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="ticketsBody">
+                <tr>
+                    <td colspan="9" class="text-center">
+                        <div class="loading-spinner"></div>
+                        <p>Loading tickets...</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/tickets.js') }}"></script>
+{% endblock %}

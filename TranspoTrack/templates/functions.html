@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Functions - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-function"></i> Database Functions</h1>
+        <p>Reusable calculations and data transformations</p>
+    </div>
+
+    <div class="function-grid">
+        <!-- Function 1: Calculate Age -->
+        <div class="function-card">
+            <div class="function-header">
+                <i class="fas fa-birthday-cake"></i>
+                <h2>Calculate Passenger Age</h2>
+            </div>
+            <p class="function-description">
+                Calculates the current age of a passenger based on their date of birth.
+            </p>
+            
+            <form class="function-form" onsubmit="calculateAge(event)">
+                <div class="form-group">
+                    <label>Passenger ID</label>
+                    <input type="number" name="passengerId" required placeholder="Enter Passenger ID">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-calculator"></i> Calculate Age
+                </button>
+            </form>
+
+            <div id="ageResult" class="function-result" style="display:none;"></div>
+
+            <div class="function-info">
+                <h4>Function Details:</h4>
+                <ul>
+                    <li><strong>Returns:</strong> INT (Age in years)</li>
+                    <li><strong>Parameters:</strong> Passenger ID</li>
+                    <li><strong>Logic:</strong> TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE())</li>
+                    <li><strong>Use Case:</strong> Age-based discounts, student passes</li>
+                </ul>
+            </div>
+
+            <div class="code-block-container">
+                <h4>SQL Code:</h4>
+                <pre class="code-block">DELIMITER //
+
+CREATE FUNCTION fn_calculate_passenger_age(p_passenger_id INT)
+RETURNS INT
+READS SQL DATA
+DETERMINISTIC
+BEGIN
+    DECLARE v_age INT;
+    DECLARE v_dob DATE;
+    
+    SELECT DateOfBirth INTO v_dob
+    FROM PASSENGER
+    WHERE PassengerID = p_passenger_id;
+    
+    IF v_dob IS NULL THEN
+        RETURN NULL;
+    END IF;
+    
+    SET v_age = TIMESTAMPDIFF(YEAR, v_dob, CURDATE());
+    
+    RETURN v_age;
+END//
+
+DELIMITER ;</pre>
+            </div>
+
+            <div class="test-cases">
+                <h4>Sample Test Cases:</h4>
+                <button class="btn btn-sm btn-outline" onclick="testAge(1)">Test Passenger 1</button>
+                <button class="btn btn-sm btn-outline" onclick="testAge(5)">Test Passenger 5</button>
+                <button class="btn btn-sm btn-outline" onclick="testAge(10)">Test Passenger 10</button>
+            </div>
+        </div>
+
+        <!-- Function 2: Check Seat Availability -->
+        <div class="function-card">
+            <div class="function-header">
+                <i class="fas fa-chair"></i>
+                <h2>Check Seat Availability</h2>
+            </div>
+            <p class="function-description">
+                Checks if a specific seat is available for booking on a given schedule and date.
+            </p>
+            
+            <form class="function-form" onsubmit="checkSeat(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Schedule ID</label>
+                        <input type="number" name="scheduleId" required placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label>Journey Date</label>
+                        <input type="date" name="journeyDate" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Seat Number</label>
+                        <input type="text" name="seatNumber" required placeholder="e.g., A01">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-search"></i> Check Availability
+                </button>
+            </form>
+
+            <div id="seatResult" class="function-result" style="display:none;"></div>
+
+            <div class="function-info">
+                <h4>Function Details:</h4>
+                <ul>
+                    <li><strong>Returns:</strong> VARCHAR(20) - 'AVAILABLE' or 'NOT_AVAILABLE'</li>
+                    <li><strong>Parameters:</strong> Schedule ID, Journey Date, Seat Number</li>
+                    <li><strong>Logic:</strong> Checks for existing bookings with status 'Booked' or 'Used'</li>
+                    <li><strong>Use Case:</strong> Real-time seat availability before booking</li>
+                </ul>
+            </div>
+
+            <div class="code-block-container">
+                <h4>SQL Code:</h4>
+                <pre class="code-block">DELIMITER //
+
+CREATE FUNCTION fn_check_seat_availability(
+    p_schedule_id INT,
+    p_journey_date DATE,
+    p_seat_number VARCHAR(10)
+)
+RETURNS VARCHAR(20)
+READS SQL DATA
+DETERMINISTIC
+BEGIN
+    DECLARE v_seat_count INT;
+    
+    SELECT COUNT(*) INTO v_seat_count
+    FROM TICKET
+    WHERE ScheduleID = p_schedule_id
+    AND JourneyDate = p_journey_date
+    AND SeatNumber = p_seat_number
+    AND TicketStatus IN ('Booked', 'Used');
+    
+    IF v_seat_count > 0 THEN
+        RETURN 'NOT_AVAILABLE';
+    ELSE
+        RETURN 'AVAILABLE';
+    END IF;
+END//
+
+DELIMITER ;</pre>
+            </div>
+
+            <div class="test-cases">
+                <h4>Sample Test Cases:</h4>
+                <button class="btn btn-sm btn-outline" onclick="testSeat(1, '2025-12-01', 'Z99')">Test Available Seat</button>
+                <button class="btn btn-sm btn-outline" onclick="testSeat(1, '2024-01-29', 'A01')">Test Booked Seat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Combined Test Section -->
+    <div class="combined-test">
+        <h2><i class="fas fa-vial"></i> Combined Function Test</h2>
+        <p>Test multiple functions with passenger data</p>
+        
+        <button class="btn btn-lg btn-primary" onclick="runCombinedTest()">
+            <i class="fas fa-play"></i> Run Combined Test
+        </button>
+        
+        <div id="combinedResult" class="combined-result" style="display:none;"></div>
+    </div>
+</div>
+
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Function Result</h2>
+            <span class="close" onclick="closeResultModal()">&times;</span>
+        </div>
+        <div id="modalContent" class="modal-body"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/functions.js') }}"></script>
+{% endblock %}

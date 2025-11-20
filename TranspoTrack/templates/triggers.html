@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Triggers - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1><i class="fas fa-bolt"></i> Database Triggers</h1>
+        <p>Automatic validations and data integrity checks</p>
+    </div>
+
+    <div class="info-cards">
+        <div class="info-card info-primary">
+            <div class="info-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="info-content">
+                <h3>Trigger 1: Payment Validation</h3>
+                <p><strong>Type:</strong> BEFORE INSERT</p>
+                <p><strong>Table:</strong> PAYMENT</p>
+                <p><strong>Purpose:</strong> Validates payment data before insertion</p>
+                <ul>
+                    <li>✓ Ensures payment is linked to either Ticket OR Pass (not both)</li>
+                    <li>✓ Validates refund amount doesn't exceed original amount</li>
+                    <li>✓ Ensures payment amount is positive</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="info-card info-success">
+            <div class="info-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="info-content">
+                <h3>Trigger 2: Pass Status Update</h3>
+                <p><strong>Type:</strong> BEFORE INSERT</p>
+                <p><strong>Table:</strong> PASS</p>
+                <p><strong>Purpose:</strong> Auto-updates pass status based on dates</p>
+                <ul>
+                    <li>✓ Validates end date is after start date</li>
+                    <li>✓ Automatically sets status to 'Expired' if end date has passed</li>
+                    <li>✓ Sets status to 'Active' for valid future passes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2><i class="fas fa-flask"></i> Test Triggers</h2>
+        
+        <!-- Trigger 1 Demo -->
+        <div class="demo-card">
+            <h3>Test Payment Validation Trigger</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h4>Test 1: Valid Payment ✅</h4>
+                    <pre class="code-block">Payment for Ticket only
+Result: Success</pre>
+                    <button class="btn btn-sm btn-primary" onclick="showTriggerTest('payment-valid')">View Details</button>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Test 2: Both Ticket & Pass ❌</h4>
+                    <pre class="code-block">Payment for both Ticket AND Pass
+Result: Error - Cannot link to both</pre>
+                    <button class="btn btn-sm btn-danger" onclick="showTriggerTest('payment-invalid')">View Details</button>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Test 3: No Reference ❌</h4>
+                    <pre class="code-block">Payment without Ticket or Pass
+Result: Error - Must link to one</pre>
+                    <button class="btn btn-sm btn-danger" onclick="showTriggerTest('payment-no-ref')">View Details</button>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Test 4: Excessive Refund ❌</h4>
+                    <pre class="code-block">Refund > Original Amount
+Result: Error - Invalid refund</pre>
+                    <button class="btn btn-sm btn-danger" onclick="showTriggerTest('payment-refund')">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trigger 2 Demo -->
+        <div class="demo-card">
+            <h3>Test Pass Status Trigger</h3>
+            <div class="demo-grid">
+                <div class="demo-item">
+                    <h4>Test 1: Future Pass ✅</h4>
+                    <pre class="code-block">Pass: 2025-12-01 to 2025-12-31
+Status: Automatically set to Active</pre>
+                    <button class="btn btn-sm btn-success" onclick="showTriggerTest('pass-future')">View Details</button>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Test 2: Expired Pass ✅</h4>
+                    <pre class="code-block">Pass: 2024-01-01 to 2024-01-02
+Status: Automatically set to Expired</pre>
+                    <button class="btn btn-sm btn-warning" onclick="showTriggerTest('pass-expired')">View Details</button>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>Test 3: Invalid Dates ❌</h4>
+                    <pre class="code-block">End Date before Start Date
+Result: Error - Invalid date range</pre>
+                    <button class="btn btn-sm btn-danger" onclick="showTriggerTest('pass-invalid')">View Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQL Code Display -->
+    <div class="code-section">
+        <h2><i class="fas fa-code"></i> Trigger SQL Code</h2>
+        
+        <div class="code-block-container">
+            <h3>Trigger 1: Payment Validation</h3>
+            <pre class="code-block">DELIMITER //
+
+CREATE TRIGGER trg_validate_payment
+BEFORE INSERT ON PAYMENT
+FOR EACH ROW
+BEGIN
+    DECLARE v_error_message VARCHAR(255);
+    
+    -- Check: Either Ticket OR Pass (not both, not neither)
+    IF (NEW.TicketNumber IS NULL AND NEW.PassID IS NULL) THEN
+        SET v_error_message = 'Payment must be associated with either a Ticket or a Pass';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_error_message;
+    END IF;
+    
+    IF (NEW.TicketNumber IS NOT NULL AND NEW.PassID IS NOT NULL) THEN
+        SET v_error_message = 'Payment cannot be associated with both a Ticket and a Pass';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_error_message;
+    END IF;
+    
+    -- Check: Refund amount validation
+    IF NEW.RefundAmount > NEW.Amount THEN
+        SET v_error_message = 'Refund amount cannot exceed original amount';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_error_message;
+    END IF;
+    
+    -- Check: Positive amount
+    IF NEW.Amount <= 0 THEN
+        SET v_error_message = 'Payment amount must be greater than 0';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_error_message;
+    END IF;
+END//
+
+DELIMITER ;</pre>
+        </div>
+
+        <div class="code-block-container">
+            <h3>Trigger 2: Pass Status Update</h3>
+            <pre class="code-block">DELIMITER //
+
+CREATE TRIGGER trg_validate_and_update_pass
+BEFORE INSERT ON PASS
+FOR EACH ROW
+BEGIN
+    DECLARE v_error_message VARCHAR(255);
+    DECLARE v_today DATE;
+    
+    SET v_today = CURDATE();
+    
+    -- Validate: End date must be after start date
+    IF NEW.EndDate <= NEW.StartDate THEN
+        SET v_error_message = 'Pass end date must be after start date';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = v_error_message;
+    END IF;
+    
+    -- Auto-update status based on dates
+    IF NEW.EndDate < v_today THEN
+        SET NEW.PassStatus = 'Expired';
+    ELSE
+        SET NEW.PassStatus = 'Active';
+    END IF;
+END//
+
+DELIMITER ;</pre>
+        </div>
+    </div>
+</div>
+
+<div id="testResultModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="testTitle">Test Result</h2>
+            <span class="close" onclick="closeTestModal()">&times;</span>
+        </div>
+        <div id="testContent" class="modal-body"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/triggers.js') }}"></script>
+{% endblock %}

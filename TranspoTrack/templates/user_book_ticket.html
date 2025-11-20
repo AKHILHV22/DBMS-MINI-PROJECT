@@ -1,0 +1,488 @@
+{% extends "base_minimal.html" %}
+
+{% block title %}Book Ticket - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="user-page-container">
+    <div class="user-page-header">
+        <a href="/user-dashboard" class="back-button">← Back to Dashboard</a>
+        <h1>🎫 Book Ticket</h1>
+        <button onclick="logout()" class="btn-logout">🚪 Logout</button>
+    </div>
+
+    <div class="page-content">
+        <div class="add-section">
+            <button class="btn-add" onclick="openBookingForm()">
+                <i class="fas fa-plus"></i> Book New Ticket
+            </button>
+        </div>
+
+        <div id="bookingFormSection" class="form-section" style="display: none;">
+            <h2>📝 Ticket Booking Form</h2>
+            <form id="ticketForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <select id="passengerName" required onchange="updatePassengerId()">
+                            <option value="">-- Select Passenger --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>From Station *</label>
+                        <select id="fromStation" required onchange="calculateFare()">
+                            <option value="">-- Select Station --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>To Station *</label>
+                        <select id="toStation" required onchange="calculateFare()">
+                            <option value="">-- Select Station --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Travel Class *</label>
+                        <select id="classType" required onchange="calculateFare()">
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
+                            <option value="First Class">First Class</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Journey Date *</label>
+                        <input type="date" id="journeyDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Fare</label>
+                        <input type="text" id="fareDisplay" readonly value="₹0.00" style="background: #f0fdfa; font-weight: 600; font-size: 1.2rem; color: #14b8a6;">
+                    </div>
+                </div>
+                <input type="hidden" id="passengerId">
+                <input type="hidden" id="scheduleId" value="1">
+                <input type="hidden" id="fare">
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeBookingForm()">Cancel</button>
+                    <button type="submit" class="btn-primary">Book Ticket</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="my-tickets-section">
+            <h2>📋 My Booked Tickets</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket Code</th>
+                            <th>From Station</th>
+                            <th>To Station</th>
+                            <th>Status</th>
+                            <th>Fare</th>
+                            <th>Journey Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsBody">
+                        <tr><td colspan="6">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.user-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.user-page-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.back-button {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-logout {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #14b8a6;
+}
+
+.page-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.add-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(45, 212, 191, 0.3);
+}
+
+.form-section {
+    background: #f0fdfa;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.form-section h2 {
+    color: #14b8a6;
+    margin-bottom: 1.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #134e4a;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ccfbf1;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2dd4bf;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%);
+    color: white;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.my-tickets-section h2 {
+    color: #14b8a6;
+    margin-bottom: 1rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+    background: #f0fdfa;
+    color: #134e4a;
+    font-weight: 600;
+}
+
+.data-table tbody tr:hover {
+    background: #f9fafb;
+}
+</style>
+
+<script>
+const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+if (!user.username || user.role !== 'user') {
+    window.location.href = '/login';
+}
+
+function logout() {
+    sessionStorage.removeItem('user');
+    showToast('Logged out successfully', 'success');
+    setTimeout(() => window.location.href = '/login', 1000);
+}
+
+function openBookingForm() {
+    document.getElementById('bookingFormSection').style.display = 'block';
+    loadPassengers();
+    loadStations();
+    setMinDate();
+}
+
+function setMinDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('journeyDate').min = today;
+    document.getElementById('journeyDate').value = today;
+}
+
+let passengers = [];
+let stations = [];
+
+async function loadPassengers() {
+    try {
+        const response = await fetch('/api/passengers');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            passengers = result.data;
+            const select = document.getElementById('passengerName');
+            select.innerHTML = '<option value="">-- Select Your Name --</option>' + 
+                passengers.map(p => {
+                    const name = p.PassengerName || p.Name || p.FullName || p.FirstName || `Passenger ${p.PassengerID}`;
+                    return `<option value="${p.PassengerID}">${name}</option>`;
+                }).join('');
+        }
+    } catch (error) {
+        console.error('Failed to load passengers', error);
+    }
+}
+
+async function loadStations() {
+    try {
+        const response = await fetch('/api/stations');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            stations = result.data;
+            const fromSelect = document.getElementById('fromStation');
+            const toSelect = document.getElementById('toStation');
+            
+            const options = '<option value="">-- Select Station --</option>' + 
+                stations.map(s => {
+                    const name = s.StationName || s.Name || s.Location || s.StationCode || `Station ${s.StationID}`;
+                    return `<option value="${s.StationID}">${name}</option>`;
+                }).join('');
+            
+            fromSelect.innerHTML = options;
+            toSelect.innerHTML = options;
+        }
+    } catch (error) {
+        console.error('Failed to load stations', error);
+    }
+}
+
+function updatePassengerId() {
+    const select = document.getElementById('passengerName');
+    document.getElementById('passengerId').value = select.value;
+}
+
+function calculateFare() {
+    const fromId = parseInt(document.getElementById('fromStation').value);
+    const toId = parseInt(document.getElementById('toStation').value);
+    const classType = document.getElementById('classType').value;
+    
+    if (!fromId || !toId || fromId === toId) {
+        document.getElementById('fareDisplay').value = '₹0.00';
+        document.getElementById('fare').value = 0;
+        return;
+    }
+    
+    // Calculate distance-based fare
+    const distance = Math.abs(toId - fromId) * 10; // 10 km per station difference
+    let baseFare = distance * 2; // ₹2 per km
+    
+    // Class multipliers
+    if (classType === 'Business') baseFare *= 1.5;
+    if (classType === 'First Class') baseFare *= 2;
+    
+    const totalFare = Math.round(baseFare * 100) / 100;
+    document.getElementById('fareDisplay').value = '₹' + totalFare.toFixed(2);
+    document.getElementById('fare').value = totalFare;
+}
+
+function closeBookingForm() {
+    document.getElementById('bookingFormSection').style.display = 'none';
+    document.getElementById('ticketForm').reset();
+}
+
+document.getElementById('ticketForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const passengerId = document.getElementById('passengerId').value;
+    const fromStation = document.getElementById('fromStation').value;
+    const toStation = document.getElementById('toStation').value;
+    
+    if (!passengerId) {
+        showToast('Please select a passenger', 'error');
+        return;
+    }
+    
+    if (!fromStation || !toStation) {
+        showToast('Please select both stations', 'error');
+        return;
+    }
+    
+    if (fromStation === toStation) {
+        showToast('From and To stations must be different', 'error');
+        return;
+    }
+    
+    const data = {
+        passengerId: passengerId,
+        scheduleId: document.getElementById('scheduleId').value,
+        fromStation: fromStation,
+        toStation: toStation,
+        classType: document.getElementById('classType').value,
+        fare: document.getElementById('fare').value
+    };
+    
+    try {
+        const response = await fetch('/api/user/book-ticket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Ticket booked successfully!', 'success');
+            closeBookingForm();
+            loadMyTickets();
+        } else {
+            showToast(result.error || 'Booking failed', 'error');
+        }
+    } catch (error) {
+        showToast('Booking failed. Please try again.', 'error');
+    }
+});
+
+async function loadMyTickets() {
+    try {
+        const response = await fetch('/api/user/tickets');
+        const result = await response.json();
+        
+        const tbody = document.getElementById('ticketsBody');
+        if (result.success && result.data && result.data.length > 0) {
+            // Load stations for name lookup
+            await loadStationsForDisplay();
+            
+            tbody.innerHTML = result.data.map(t => {
+                const fromStation = getStationName(t.SourceStationID);
+                const toStation = getStationName(t.DestStationID);
+                const journeyDate = t.JourneyDate ? new Date(t.JourneyDate).toLocaleDateString() : 'N/A';
+                
+                return `
+                <tr>
+                    <td>${t.TicketCode || t.TicketNumber || 'N/A'}</td>
+                    <td>${fromStation}</td>
+                    <td>${toStation}</td>
+                    <td>${t.TicketStatus || 'Booked'}</td>
+                    <td>₹${t.Fare ? parseFloat(t.Fare).toFixed(2) : '0.00'}</td>
+                    <td>${journeyDate}</td>
+                </tr>
+                `;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="6">No tickets found</td></tr>';
+        }
+    } catch (error) {
+        console.error('Load tickets error:', error);
+        document.getElementById('ticketsBody').innerHTML = '<tr><td colspan="6">Failed to load tickets</td></tr>';
+    }
+}
+
+let stationsMap = {};
+
+async function loadStationsForDisplay() {
+    if (Object.keys(stationsMap).length > 0) return; // Already loaded
+    
+    try {
+        const response = await fetch('/api/stations');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            result.data.forEach(s => {
+                stationsMap[s.StationID] = s.Name || s.StationName || s.Location || s.StationCode || 'Unknown';
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load stations for display', error);
+    }
+}
+
+function getStationName(stationId) {
+    return stationsMap[stationId] || 'N/A';
+}
+
+loadMyTickets();
+</script>
+{% endblock %}

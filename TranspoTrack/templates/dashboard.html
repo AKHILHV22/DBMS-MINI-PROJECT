@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TranspoTrack{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="page-header">
+        <h1><i class="fas fa-dashboard"></i> Dashboard</h1>
+        <p>Real-time overview of TranspoTrack system</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card stat-primary">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-details">
+                <h3>{{ stats.total_passengers }}</h3>
+                <p>Active Passengers</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-icon">
+                <i class="fas fa-ticket"></i>
+            </div>
+            <div class="stat-details">
+                <h3>{{ stats.total_tickets }}</h3>
+                <p>Booked Tickets</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-info">
+            <div class="stat-icon">
+                <i class="fas fa-id-card"></i>
+            </div>
+            <div class="stat-details">
+                <h3>{{ stats.active_passes }}</h3>
+                <p>Active Passes</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-icon">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-details">
+                <h3>₹{{ "%.2f"|format(stats.total_revenue) }}</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-danger">
+            <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-details">
+                <h3>{{ stats.pending_complaints }}</h3>
+                <p>Pending Complaints</p>
+            </div>
+        </div>
+
+        <div class="stat-card stat-purple">
+            <div class="stat-icon">
+                <i class="fas fa-bus"></i>
+            </div>
+            <div class="stat-details">
+                <h3>{{ stats.active_vehicles }}</h3>
+                <p>Active Vehicles</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+        <div class="action-grid">
+            <a href="{{ url_for('passengers') }}" class="action-card">
+                <i class="fas fa-user-plus"></i>
+                <span>Add Passenger</span>
+            </a>
+            <a href="{{ url_for('tickets') }}" class="action-card">
+                <i class="fas fa-ticket"></i>
+                <span>Book Ticket</span>
+            </a>
+            <a href="{{ url_for('passes') }}" class="action-card">
+                <i class="fas fa-id-card"></i>
+                <span>Issue Pass</span>
+            </a>
+            <a href="{{ url_for('complaints') }}" class="action-card">
+                <i class="fas fa-comment"></i>
+                <span>View Complaints</span>
+            </a>
+            <a href="{{ url_for('reports') }}" class="action-card">
+                <i class="fas fa-chart-bar"></i>
+                <span>Generate Report</span>
+            </a>
+            <a href="{{ url_for('queries') }}" class="action-card">
+                <i class="fas fa-search"></i>
+                <span>Run Queries</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <h2><i class="fas fa-clock"></i> System Status</h2>
+        <div class="status-grid">
+            <div class="status-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span>Database Connected</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span>All Services Running</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span>Triggers Active</span>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span>Procedures Available</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
